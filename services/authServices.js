@@ -1,17 +1,29 @@
-// const { User } = require("../models/user");
-// const { HttpError } = require("../utils");
+const User = require("../models/user");
 
-// const register = async (email) => {
-//   const user = await User.findOne({ email });
-//   if (user) {
-//     throw HttpError(409, "Email in use");
-//   }
-//   return user;
-// };
+const getUser = async (params) => {
+  return await User.findOne({ ...params });
+};
 
-// const loginServices = async () => {};
+const getUserById = async (id) => {
+  return await User.findById(id);
+};
 
-// module.exports = {
-//   register,
-//   loginServices,
-// };
+const addUser = async (body) => {
+  return await User.create({ ...body });
+};
+
+const updateUser = async (_id, body) => {
+  return await User.findByIdAndUpdate(_id, { ...body }, { new: true });
+};
+
+const deleteUserById = async (_id) => {
+  return await User.findByIdAndDelete(_id);
+};
+
+module.exports = {
+  getUser,
+  getUserById,
+  addUser,
+  updateUser,
+  deleteUserById,
+};

@@ -7,7 +7,7 @@ const {
   upload,
   jimp,
 } = require("../middlewares");
-const { schemas } = require("../models/user");
+const schemas = require("../schemas/userSchemas");
 const router = express.Router();
 
 router.post(
@@ -40,5 +40,6 @@ router.patch(
   jimp,
   ctrl.updateAvatars
 );
+router.delete("/", authenticate, ctrl.deleteUser);
 
 module.exports = router;

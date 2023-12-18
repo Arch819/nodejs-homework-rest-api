@@ -1,5 +1,11 @@
-const { Contacts } = require("../models/contact");
 const { HttpError, ctrlWrapper } = require("../utils");
+const {
+  getContactById,
+  getAllContacts,
+  addContact,
+  deleteContactById,
+  updateContact,
+} = require("../services/contactsServices");
 
 const getAll = async (req, res, next) => {
   const { page = 1, limit = 20, favorite } = req.query;
@@ -9,7 +15,7 @@ const getAll = async (req, res, next) => {
   if (favorite) {
     query.favorite = true;
   }
-  const result = await Contacts.find(query, "", { skip, limit });
+  const result = await getAllContacts(query, "", { skip, limit });
 
   res.json(result);
 };
@@ -17,9 +23,7 @@ const getAll = async (req, res, next) => {
 const getById = async (req, res, next) => {
   const { contactId } = req.params;
   const { _id: owner } = req.user;
-  const result = await Contacts.findById(contactId)
-    .where("owner")
-    .equals(owner);
+  const result = await getContactById(contactId).where("owner").equals(owner);
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -28,20 +32,18 @@ const getById = async (req, res, next) => {
 
 const add = async (req, res, next) => {
   const { _id: owner } = req.user;
-  const result = await Contacts.create({ ...req.body, owner });
+  const result = await addContact({ ...req.body, owner });
   res.status(201).json(result);
 };
 
 const deleteById = async (req, res, next) => {
   const { contactId } = req.params;
   const { _id: owner } = req.user;
-  const contact = await Contacts.findById(contactId)
-    .where("owner")
-    .equals(owner);
+  const contact = await getContactById(contactId).where("owner").equals(owner);
   if (!contact) {
     throw HttpError(404, "Not found");
   }
-  const result = await Contacts.findByIdAndDelete(contactId);
+  const result = await deleteContactById(contactId);
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -51,13 +53,11 @@ const deleteById = async (req, res, next) => {
 const updateById = async (req, res, next) => {
   const { contactId } = req.params;
   const { _id: owner } = req.user;
-  const contact = await Contacts.findById(contactId)
-    .where("owner")
-    .equals(owner);
+  const contact = await getContactById(contactId).where("owner").equals(owner);
   if (!contact) {
     throw HttpError(404, "Not found");
   }
-  const result = await Contacts.findByIdAndUpdate(contactId, req.body, {
+  const result = await updateContact(contactId, req.body, {
     new: true,
   });
   if (!result) {
@@ -69,13 +69,11 @@ const updateById = async (req, res, next) => {
 const updateStatusContact = async (req, res, next) => {
   const { contactId } = req.params;
   const { _id: owner } = req.user;
-  const contact = await Contacts.findById(contactId)
-    .where("owner")
-    .equals(owner);
+  const contact = await getContactById(contactId).where("owner").equals(owner);
   if (!contact) {
     throw HttpError(404, "Not found");
   }
-  const result = await Contacts.findByIdAndUpdate(contactId, req.body, {
+  const result = await updateContact(contactId, req.body, {
     new: true,
   });
   if (!result) {
